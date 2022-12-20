@@ -33,5 +33,6 @@ func Init() {
 	if err != nil {
 		log.Fatalf("Error parsing config file: %v", err)
 	}
-	log.Println("Config loaded", C)
+	// log.Println("Config loaded", C)
+	log.Printf("Config loaded")
 }

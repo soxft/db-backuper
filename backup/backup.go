@@ -2,6 +2,7 @@ package backup
 
 import (
 	"errors"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -25,16 +26,15 @@ func Mysql(host, port, user, password, databaseName, sqlPath string) (string, er
 	//stdout, _ := cmd.StdoutPipe()
 	// defer stdout.Close()
 
-	// stderr, _ := cmd.StderrPipe()
-	// defer stderr.Close()
+	stderr, _ := cmd.StderrPipe()
+	defer stderr.Close()
 
 	if err := cmd.Start(); err != nil {
 		log.Println(err)
 		return "", err
 	}
 
-	// content, _ := ioutil.ReadAll(stderr)
-	// log.Println(string(content))
+	stderrContent, _ := io.ReadAll(stderr)
 
 	// wait for command to finish
 	cmd.Wait()
@@ -44,7 +44,7 @@ func Mysql(host, port, user, password, databaseName, sqlPath string) (string, er
 		if fi.Size() == 0 {
 			log.Println("Backup file is 0 bytes")
 			os.Remove(backupPath)
-			return "", errors.New("backup error")
+			return "", errors.New(string(stderrContent))
 		}
 	} else {
 		log.Println(err)
