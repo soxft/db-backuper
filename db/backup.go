@@ -1,4 +1,4 @@
-package backup
+package db
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ import (
 	"github.com/soxft/mysql-backuper/tool"
 )
 
-func Mysql(host, port, user, password, databaseName, sqlPath string) (string, error) {
+func MysqlDump(host, port, user, password, databaseName, sqlPath string) (string, error) {
 	// check if sqlPath dir exists
 	if !tool.PathExists(sqlPath) {
 		return "", errors.New("sqlPath does not exist")
@@ -42,12 +42,11 @@ func Mysql(host, port, user, password, databaseName, sqlPath string) (string, er
 	// check if the backup file is created or if file is 0 bytes
 	if fi, err := os.Stat(backupPath); err == nil {
 		if fi.Size() == 0 {
-			log.Println("Backup file is 0 bytes")
+			// log.Println("Backup file is 0 bytes")
 			os.Remove(backupPath)
 			return "", errors.New(string(stderrContent))
 		}
 	} else {
-		log.Println(err)
 		return "", err
 	}
 
