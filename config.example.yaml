@@ -1,0 +1,29 @@
+Local:
+  Dir: "/root/backups/" # 本地备份目录, 绝对路径, 必须指定 
+Mysql:
+  urlshorter:
+    Host: localhost
+    Port: 3306
+    User: root
+    Pass: rootpwd
+    Db: urlshorter
+    Cron: "* * * * *"
+    BackupTo:
+      - local
+      - cos
+  blog:
+    Host: localhost
+    Port: 3306
+    User: root
+    Pass: rootpwd
+    Db: blog
+    Cron: "* * * * *"
+    BackupTo:
+      - cos
+Cos:
+  Region: ap-hongkong
+  Bucket: example-1000000000
+  Secret:
+    ID: SecretID
+    Key: SecretKey
+  Path: /backup/
