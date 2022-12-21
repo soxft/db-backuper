@@ -59,10 +59,10 @@ func run(name string, info config.MysqlStruct) {
 		log.Printf("%s > Backup created: %s", name, location)
 
 		if isMethodContains(info.BackupTo, "cos") {
-			if err := backup.ToCos(location, location[len(config.C.Local.Dir):]); err != nil {
+			if rlocation, err := backup.ToCos(location, location[len(config.C.Local.Dir):]); err != nil {
 				log.Printf("%s > cos upload error: %v", name, err)
 			} else {
-				log.Printf("%s > cos upload success: %s", name, location)
+				log.Printf("%s > cos upload success: %s", name, rlocation)
 			}
 		}
 		if !isMethodContains(info.BackupTo, "local") {

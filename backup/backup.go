@@ -10,7 +10,7 @@ import (
 	"github.com/tencentyun/cos-go-sdk-v5"
 )
 
-func ToCos(flocation, filename string) error {
+func ToCos(flocation, filename string) (string, error) {
 
 	bucketURL, _ := url.Parse("https://" + config.C.Cos.Bucket + ".cos." + config.C.Cos.Region + ".myqcloud.com")
 	b := &cos.BaseURL{BucketURL: bucketURL}
@@ -26,9 +26,9 @@ func ToCos(flocation, filename string) error {
 	ok, err := client.Bucket.IsExist(context.Background())
 
 	if err != nil {
-		return err
+		return "", err
 	} else if !ok {
-		return errors.New("bucket does not exist")
+		return "", errors.New("bucket does not exist")
 	}
 
 	// check if path ends with "/"
@@ -44,7 +44,7 @@ func ToCos(flocation, filename string) error {
 	remoteFullPath := config.C.Cos.Path + filename
 	_, err = client.Object.PutFromFile(context.Background(), remoteFullPath, flocation, nil)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return remoteFullPath, nil
 }
