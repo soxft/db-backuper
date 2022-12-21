@@ -13,10 +13,6 @@ import (
 )
 
 func Run() {
-
-	err := backup.ToCos("/root/goprok/backups/db_timeletters_221221_095700.sql", "ad.sql")
-	log.Println(err)
-	os.Exit(0)
 	c := cron.New()
 
 	for k, v := range config.C.Mysql {
@@ -45,6 +41,13 @@ func cronFunc(k string, v config.MysqlStruct) func() {
 
 // backup main func
 func run(name string, info config.MysqlStruct) {
+	defer func() {
+		// recover
+		if err := recover(); err != nil {
+			log.Printf("%s > Backup error: %v", name, err)
+		}
+	}()
+
 	if info.BackupTo == nil {
 		log.Printf("%s > BackupTo is empty", name)
 		return
