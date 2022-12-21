@@ -41,10 +41,8 @@ func cronFunc(k string, v config.MysqlStruct) func() {
 }
 
 func backup(name string, info config.MysqlStruct) {
-	if location, err := db.MysqlDump(info.Host, info.Port, info.User, info.Pass, info.Db, config.C.Config.BackupDir); err != nil {
-		log.SetOutput(os.Stderr)
+	if location, err := db.MysqlDump(info.Host, info.Port, info.User, info.Pass, info.Db, config.C.Local.Dir); err != nil {
 		log.Printf("%s > Backup error: %v", name, err)
-		log.SetOutput(os.Stdout)
 	} else {
 		log.Printf("%s > Backup created: %s", name, location)
 	}
