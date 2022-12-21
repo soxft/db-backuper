@@ -3,6 +3,7 @@ package config
 type CStruct struct {
 	Local ConfigStruct           `yaml:"Local"`
 	Mysql map[string]MysqlStruct `yaml:"Mysql"`
+	Cos   CosStruct              `yaml:"Cos"`
 }
 
 type ConfigStruct struct {
@@ -17,4 +18,14 @@ type MysqlStruct struct {
 	Db       string   `yaml:"Db"`
 	Cron     string   `yaml:"Cron"`
 	BackupTo []string `yaml:"BackupTo"`
+}
+
+type CosStruct struct {
+	Region string `yaml:"Region"`
+	Bucket string `yaml:"Bucket"`
+	Secret struct {
+		Id  string `yaml:"ID"`
+		Key string `yaml:"Key"`
+	} `yaml:"Secret"`
+	Path string `yaml:"Path"`
 }

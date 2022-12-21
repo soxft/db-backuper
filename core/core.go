@@ -7,12 +7,16 @@ import (
 	"syscall"
 
 	"github.com/robfig/cron/v3"
+	"github.com/soxft/mysql-backuper/backup"
 	"github.com/soxft/mysql-backuper/config"
 	"github.com/soxft/mysql-backuper/db"
 )
 
 func Run() {
 
+	err := backup.ToCos("/root/goprok/backups/db_timeletters_221221_173200.sql", "db_timeletters_221221_173200.sql")
+	log.Println(err)
+	os.Exit(0)
 	c := cron.New()
 
 	for k, v := range config.C.Mysql {
@@ -35,15 +39,42 @@ func Run() {
 
 func cronFunc(k string, v config.MysqlStruct) func() {
 	return func() {
-		log.Printf("%s > Cron triggered", k)
-		backup(k, v)
+		go run(k, v)
 	}
 }
 
-func backup(name string, info config.MysqlStruct) {
+// backup main func
+func run(name string, info config.MysqlStruct) {
+	if info.BackupTo == nil {
+		log.Printf("%s > BackupTo is empty", name)
+		return
+	}
+
 	if location, err := db.MysqlDump(info.Host, info.Port, info.User, info.Pass, info.Db, config.C.Local.Dir); err != nil {
 		log.Printf("%s > Backup error: %v", name, err)
 	} else {
 		log.Printf("%s > Backup created: %s", name, location)
+
+		if isMethodContains(info.BackupTo, "cos") {
+			if err := backup.ToCos(location, location[len(config.C.Local.Dir):]); err != nil {
+				log.Printf("%s > cos upload error: %v", name, err)
+			} else {
+				log.Printf("%s > cos upload success: %s", name, location)
+			}
+		}
+		if !isMethodContains(info.BackupTo, "local") {
+			_ = os.Remove(location)
+			log.Printf("%s > local backup removed: %s", name, location)
+		}
 	}
+}
+
+// isMethodContains check if method is in list
+func isMethodContains(list []string, method string) bool {
+	for _, v := range list {
+		if v == method {
+			return true
+		}
+	}
+	return false
 }
