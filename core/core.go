@@ -14,7 +14,7 @@ import (
 
 func Run() {
 
-	err := backup.ToCos("/root/goprok/backups/db_timeletters_221221_173200.sql", "db_timeletters_221221_173200.sql")
+	err := backup.ToCos("/root/goprok/backups/db_timeletters_221221_095700.sql", "ad.sql")
 	log.Println(err)
 	os.Exit(0)
 	c := cron.New()
