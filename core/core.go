@@ -16,10 +16,7 @@ func Run() {
 	c := cron.New()
 
 	for k, v := range config.C.Mysql {
-		if _, err := c.AddFunc(v.Cron, func() {
-			log.Printf("%s > Cron triggered", k)
-			// backup(k, v)
-		}); err != nil {
+		if _, err := c.AddFunc(v.Cron, cronFunc(k, v)); err != nil {
 			log.Fatalf("%s > Add Cron error: %v", k, err)
 		} else {
 			log.Printf("%s > Cron added: %s", k, v.Cron)
@@ -34,6 +31,13 @@ func Run() {
 	<-sig
 	c.Stop()
 	log.Println("Bye! :)")
+}
+
+func cronFunc(k string, v config.MysqlStruct) func() {
+	return func() {
+		log.Printf("%s > Cron triggered", k)
+		backup(k, v)
+	}
 }
 
 func backup(name string, info config.MysqlStruct) {
