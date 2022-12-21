@@ -10,10 +10,14 @@ import (
 	"github.com/soxft/db-backuper/backup"
 	"github.com/soxft/db-backuper/config"
 	"github.com/soxft/db-backuper/db"
+	"github.com/soxft/db-backuper/tool"
 )
 
 func Run() {
-	c := cron.New()
+	err := tool.DeleteLocal(config.Local.Dir, 10)
+	log.Println(err)
+	os.Exit(0)
+	c := cron.New(cron.WithSeconds())
 
 	for k, v := range config.Mysql {
 		if _, err := c.AddFunc(v.Cron, cronFunc(k, v)); err != nil {
@@ -65,10 +69,14 @@ func run(name string, info config.MysqlStruct) {
 				log.Printf("%s > cos upload success: %s", name, rlocation)
 			}
 		}
+
 		if !isMethodContains(info.BackupTo, "local") {
 			_ = os.Remove(location)
 			log.Printf("%s > local backup removed: %s", name, location)
 		}
+
+		// remove local backup files if max file num is set
+		tool.DeleteLocal(config.Local.Dir, config.Local.MaxFileNum)
 	}
 }
 

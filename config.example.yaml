@@ -1,5 +1,6 @@
 Local:
   Dir: "/root/backups/" # 本地备份目录, 绝对路径, 必须指定 
+  MaxFiles: 10
 Mysql:
   urlshorter:
     Host: localhost
@@ -27,3 +28,4 @@ Cos:
     ID: SecretID
     Key: SecretKey
   Path: /backup/
+  MaxFiles: 10
