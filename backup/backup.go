@@ -31,15 +31,6 @@ func ToCos(flocation, filename string) (string, error) {
 		return "", errors.New("bucket does not exist")
 	}
 
-	// check if path ends with "/"
-	if config.Cos.Path[len(config.Cos.Path)-1:] != "/" {
-		config.Cos.Path += "/"
-	}
-	// not start with "/"
-	if config.Cos.Path[0:1] == "/" {
-		config.Cos.Path = config.Cos.Path[1:]
-	}
-
 	// upload
 	remoteFullPath := config.Cos.Path + filename
 	_, err = client.Object.PutFromFile(context.Background(), remoteFullPath, flocation, nil)

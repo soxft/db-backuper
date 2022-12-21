@@ -41,6 +41,20 @@ func Init() {
 	Local = C.Local
 	Mysql = C.Mysql
 	Cos = C.Cos
+
+	// check if path ends with "/"
+	if Cos.Path[len(Cos.Path)-1:] != "/" {
+		Cos.Path += "/"
+	}
+	// not start with "/"
+	if Cos.Path[0:1] == "/" {
+		Cos.Path = Cos.Path[1:]
+	}
+	// check if path ends with "/"
+	if Local.Dir[len(Local.Dir)-1:] != "/" {
+		Local.Dir += "/"
+	}
+
 	// log.Println("Config loaded", C)
 	log.Printf("Config loaded")
 }
