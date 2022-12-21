@@ -14,7 +14,7 @@ import (
 )
 
 func Run() {
-	c := cron.New(cron.WithSeconds())
+	c := cron.New()
 
 	for k, v := range config.Mysql {
 		if _, err := c.AddFunc(v.Cron, cronFunc(k, v)); err != nil {
