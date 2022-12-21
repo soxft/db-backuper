@@ -1,12 +1,12 @@
 package config
 
 type CStruct struct {
-	Local ConfigStruct           `yaml:"Local"`
+	Local LocalStruct            `yaml:"Local"`
 	Mysql map[string]MysqlStruct `yaml:"Mysql"`
 	Cos   CosStruct              `yaml:"Cos"`
 }
 
-type ConfigStruct struct {
+type LocalStruct struct {
 	Dir string `yaml:"Dir"`
 }
 

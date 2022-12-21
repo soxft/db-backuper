@@ -15,7 +15,7 @@ import (
 func Run() {
 	c := cron.New()
 
-	for k, v := range config.C.Mysql {
+	for k, v := range config.Mysql {
 		if _, err := c.AddFunc(v.Cron, cronFunc(k, v)); err != nil {
 			log.Fatalf("%s > Add Cron error: %v", k, err)
 		} else {
@@ -53,13 +53,13 @@ func run(name string, info config.MysqlStruct) {
 		return
 	}
 
-	if location, err := db.MysqlDump(info.Host, info.Port, info.User, info.Pass, info.Db, config.C.Local.Dir); err != nil {
+	if location, err := db.MysqlDump(info.Host, info.Port, info.User, info.Pass, info.Db, config.Local.Dir); err != nil {
 		log.Printf("%s > Backup error: %v", name, err)
 	} else {
 		log.Printf("%s > Backup created: %s", name, location)
 
 		if isMethodContains(info.BackupTo, "cos") {
-			if rlocation, err := backup.ToCos(location, location[len(config.C.Local.Dir):]); err != nil {
+			if rlocation, err := backup.ToCos(location, location[len(config.Local.Dir):]); err != nil {
 				log.Printf("%s > cos upload error: %v", name, err)
 			} else {
 				log.Printf("%s > cos upload success: %s", name, rlocation)

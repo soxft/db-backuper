@@ -12,13 +12,13 @@ import (
 
 func ToCos(flocation, filename string) (string, error) {
 
-	bucketURL, _ := url.Parse("https://" + config.C.Cos.Bucket + ".cos." + config.C.Cos.Region + ".myqcloud.com")
+	bucketURL, _ := url.Parse("https://" + config.Cos.Bucket + ".cos." + config.Cos.Region + ".myqcloud.com")
 	b := &cos.BaseURL{BucketURL: bucketURL}
 
 	client := cos.NewClient(b, &http.Client{
 		Transport: &cos.AuthorizationTransport{
-			SecretID:  config.C.Cos.Secret.Id,
-			SecretKey: config.C.Cos.Secret.Key,
+			SecretID:  config.Cos.Secret.Id,
+			SecretKey: config.Cos.Secret.Key,
 		},
 	})
 
@@ -32,16 +32,16 @@ func ToCos(flocation, filename string) (string, error) {
 	}
 
 	// check if path ends with "/"
-	if config.C.Cos.Path[len(config.C.Cos.Path)-1:] != "/" {
-		config.C.Cos.Path += "/"
+	if config.Cos.Path[len(config.Cos.Path)-1:] != "/" {
+		config.Cos.Path += "/"
 	}
 	// not start with "/"
-	if config.C.Cos.Path[0:1] == "/" {
-		config.C.Cos.Path = config.C.Cos.Path[1:]
+	if config.Cos.Path[0:1] == "/" {
+		config.Cos.Path = config.Cos.Path[1:]
 	}
 
 	// upload
-	remoteFullPath := config.C.Cos.Path + filename
+	remoteFullPath := config.Cos.Path + filename
 	_, err = client.Object.PutFromFile(context.Background(), remoteFullPath, flocation, nil)
 	if err != nil {
 		return "", err
