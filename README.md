@@ -1,7 +1,7 @@
 # db_backuper
 > A simple tool to backup your database
 
-## useage
+## usage
 
 > db_backuper -h
 
