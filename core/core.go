@@ -14,9 +14,6 @@ import (
 )
 
 func Run() {
-	err := tool.DeleteLocal(config.Local.Dir, 10)
-	log.Println(err)
-	os.Exit(0)
 	c := cron.New(cron.WithSeconds())
 
 	for k, v := range config.Mysql {
@@ -63,7 +60,7 @@ func run(name string, info config.MysqlStruct) {
 		log.Printf("%s > Backup created: %s", name, location)
 
 		if isMethodContains(info.BackupTo, "cos") {
-			if rlocation, err := backup.ToCos(location, location[len(config.Local.Dir):]); err != nil {
+			if rlocation, err := backup.ToCos(location, info.Db); err != nil {
 				log.Printf("%s > cos upload error: %v", name, err)
 			} else {
 				log.Printf("%s > cos upload success: %s", name, rlocation)
