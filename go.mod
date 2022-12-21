@@ -1,4 +1,4 @@
-module github.com/soxft/mysql-backuper
+module github.com/soxft/db-backuper
 
 go 1.19
 

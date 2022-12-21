@@ -7,9 +7,9 @@ import (
 	"syscall"
 
 	"github.com/robfig/cron/v3"
-	"github.com/soxft/mysql-backuper/backup"
-	"github.com/soxft/mysql-backuper/config"
-	"github.com/soxft/mysql-backuper/db"
+	"github.com/soxft/db-backuper/backup"
+	"github.com/soxft/db-backuper/config"
+	"github.com/soxft/db-backuper/db"
 )
 
 func Run() {

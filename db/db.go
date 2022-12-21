@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/soxft/mysql-backuper/tool"
+	"github.com/soxft/db-backuper/tool"
 )
 
 func MysqlDump(host, port, user, password, databaseName, sqlPath string) (string, error) {
