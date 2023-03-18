@@ -12,6 +12,10 @@ import (
 var (
 	C          *CStruct
 	configPath string
+
+	Local LocalStruct
+	Mysql map[string]MysqlStruct
+	Cos   CosStruct
 )
 
 func Init() {
@@ -33,6 +37,24 @@ func Init() {
 	if err != nil {
 		log.Fatalf("Error parsing config file: %v", err)
 	}
+
+	Local = C.Local
+	Mysql = C.Mysql
+	Cos = C.Cos
+
+	// check if path ends with "/"
+	if Cos.Path[len(Cos.Path)-1:] != "/" {
+		Cos.Path += "/"
+	}
+	// not start with "/"
+	if Cos.Path[0:1] == "/" {
+		Cos.Path = Cos.Path[1:]
+	}
+	// check if path ends with "/"
+	if Local.Dir[len(Local.Dir)-1:] != "/" {
+		Local.Dir += "/"
+	}
+
 	// log.Println("Config loaded", C)
 	log.Printf("Config loaded")
 }
