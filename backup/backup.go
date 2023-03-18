@@ -1,55 +1,50 @@
 package backup
 
 import (
+	"context"
 	"errors"
-	"io"
-	"log"
-	"os"
-	"os/exec"
-	"time"
+	"net/http"
+	"net/url"
 
-	"github.com/soxft/mysql-backuper/tool"
+	"github.com/soxft/db-backuper/config"
+	"github.com/tencentyun/cos-go-sdk-v5"
 )
 
-func Mysql(host, port, user, password, databaseName, sqlPath string) (string, error) {
-	// check if sqlPath dir exists
-	if !tool.PathExists(sqlPath) {
-		return "", errors.New("sqlPath does not exist")
+func ToCos(flocation, filename string) (string, error) {
+
+	bucketURL, _ := url.Parse("https://" + config.C.Cos.Bucket + ".cos." + config.C.Cos.Region + ".myqcloud.com")
+	b := &cos.BaseURL{BucketURL: bucketURL}
+
+	client := cos.NewClient(b, &http.Client{
+		Transport: &cos.AuthorizationTransport{
+			SecretID:  config.C.Cos.Secret.Id,
+			SecretKey: config.C.Cos.Secret.Key,
+		},
+	})
+
+	// check Bucket exist
+	ok, err := client.Bucket.IsExist(context.Background())
+
+	if err != nil {
+		return "", err
+	} else if !ok {
+		return "", errors.New("bucket does not exist")
 	}
 
-	var cmd *exec.Cmd
+	// check if path ends with "/"
+	if config.C.Cos.Path[len(config.C.Cos.Path)-1:] != "/" {
+		config.C.Cos.Path += "/"
+	}
+	// not start with "/"
+	if config.C.Cos.Path[0:1] == "/" {
+		config.C.Cos.Path = config.C.Cos.Path[1:]
+	}
 
-	backupPath := sqlPath + "db_" + databaseName + "_" + time.Now().Format("060102_150405") + ".sql"
-
-	cmd = exec.Command("mysqldump", "--opt", "-h"+host, "-P"+port, "-u"+user, "-p"+password, databaseName, "--result-file="+backupPath)
-
-	//stdout, _ := cmd.StdoutPipe()
-	// defer stdout.Close()
-
-	stderr, _ := cmd.StderrPipe()
-	defer stderr.Close()
-
-	if err := cmd.Start(); err != nil {
-		log.Println(err)
+	// upload
+	remoteFullPath := config.C.Cos.Path + filename
+	_, err = client.Object.PutFromFile(context.Background(), remoteFullPath, flocation, nil)
+	if err != nil {
 		return "", err
 	}
-
-	stderrContent, _ := io.ReadAll(stderr)
-
-	// wait for command to finish
-	cmd.Wait()
-
-	// check if the backup file is created or if file is 0 bytes
-	if fi, err := os.Stat(backupPath); err == nil {
-		if fi.Size() == 0 {
-			log.Println("Backup file is 0 bytes")
-			os.Remove(backupPath)
-			return "", errors.New(string(stderrContent))
-		}
-	} else {
-		log.Println(err)
-		return "", err
-	}
-
-	return backupPath, nil
+	return remoteFullPath, nil
 }

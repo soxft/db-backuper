@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/soxft/mysql-backuper/config"
-	"github.com/soxft/mysql-backuper/core"
+	"github.com/soxft/db-backuper/config"
+	"github.com/soxft/db-backuper/core"
 )
 
 func main() {
