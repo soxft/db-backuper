@@ -59,7 +59,7 @@ func removeCosMax(remotePath string, max int) error {
 	})
 
 	opt := &cos.BucketGetOptions{
-		Prefix:  "backups/timeletters",
+		Prefix:  remotePath,
 		MaxKeys: 1000,
 	}
 	res, _, err := client.Bucket.Get(context.Background(), opt)
